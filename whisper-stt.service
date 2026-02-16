@@ -1,0 +1,48 @@
+# ========================================
+# Faster-Whisper STT Server systemd 서비스
+# ========================================
+#
+# 설치 방법:
+#   1. 이 파일을 복사:
+#      sudo cp whisper-stt.service /etc/systemd/system/
+#
+#   2. 서비스 등록 및 시작:
+#      sudo systemctl daemon-reload
+#      sudo systemctl enable whisper-stt
+#      sudo systemctl start whisper-stt
+#
+#   3. 상태 확인:
+#      sudo systemctl status whisper-stt
+#
+#   4. 로그 확인:
+#      sudo journalctl -u whisper-stt -f
+#
+# ========================================
+
+[Unit]
+Description=Faster-Whisper STT Server
+After=network.target
+
+[Service]
+# ⚠️ 아래 경로를 실제 환경에 맞게 수정하세요!
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/FasterWhisper
+Environment="PATH=/home/ubuntu/FasterWhisper/venv/bin"
+
+# 서버 실행 명령어
+ExecStart=/home/ubuntu/FasterWhisper/venv/bin/python whisper_server.py --mode ws
+
+# 재시작 설정
+Restart=always
+RestartSec=10
+
+# 로그 설정
+StandardOutput=journal
+StandardError=journal
+
+# GPU 관련 환경변수
+Environment="CUDA_VISIBLE_DEVICES=0"
+
+[Install]
+WantedBy=multi-user.target
